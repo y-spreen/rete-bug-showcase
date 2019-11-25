@@ -130,12 +130,11 @@ export default {
       this.engine.register(component);
       this.editor.register(component);
     });
-    this.editor.on(
-      "process nodecreated noderemoved connectioncreated connectionremoved",
-      async () => {
-        await this.engine.abort();
-        await this.engine.process(this.editor.toJSON());
-      }
-    );
+
+    // Removing the following block crashes rete.js
+    this.editor.on("connectioncreated connectionremoved", async () => {
+      await this.engine.abort();
+      await this.engine.process(this.editor.toJSON());
+    });
   }
 };

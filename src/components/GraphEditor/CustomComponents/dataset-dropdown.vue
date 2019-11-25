@@ -38,6 +38,8 @@
 </template>
 
 <script>
+import Global from "src/global";
+
 const mockTypes = ["mock1", "mock2"];
 const mockNames = ["mock3", "mock4"];
 
@@ -93,9 +95,12 @@ export default {
     },
     rerender() {
       let node = this.node;
+      console.log("rerender " + node.data.displayName);
+      Global.pulse();
+
       setTimeout(() => {
         this.editor && this.editor.view.updateConnections({ node });
-      }, 0);
+      }, 0); // <- this value doesnt change the bug. 0-1000 same thing.
     },
     nameChange(v) {
       this.selectName(v);

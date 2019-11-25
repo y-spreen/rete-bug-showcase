@@ -22,3 +22,17 @@ body,
   outline: initial !important;
   box-shadow: initial !important;
 }
+
+.update-indicator {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  width: 30px;
+  height: 30px;
+  background-color: red;
+  border-radius: 100%;
+  &.fade {
+    opacity: 0;
+    transition: opacity 1s;
+  }
+}
