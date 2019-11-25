@@ -6,10 +6,10 @@ import ContextMenuPlugin from "rete-context-menu-plugin";
 import CustomNodeComponent from "./CustomComponents/node.vue";
 
 class CustomSocket extends Rete.Socket {
-  constructor(name, _) {
+  constructor(name) {
     super(name);
   }
-  compatibleWith(_) {
+  compatibleWith() {
     return true;
   }
 }
@@ -49,8 +49,8 @@ export default {
     },
     createDataNodes() {
       let updateDataNode = this.updateDataNode;
-      let inputSocket = new CustomSocket("input", true);
-      let outputSocket = new CustomSocket("output", true);
+      let inputSocket = new CustomSocket("input");
+      let outputSocket = new CustomSocket("output");
       this.classes.push(
         class extends Rete.Component {
           constructor() {
@@ -97,12 +97,10 @@ export default {
   },
   mounted() {
     this.editor = new Rete.NodeEditor(
-      "demo@1.0.0",
+      "demo@0.1.0",
       document.querySelector(".rete-editor .node-editor")
     );
-    this.engine = new Rete.Engine("demo@1.0.0");
-
-    this.createDataNodes();
+    this.engine = new Rete.Engine("demo@0.1.0");
 
     const renderOptions = {
       component: CustomNodeComponent
@@ -125,5 +123,19 @@ export default {
         Clone: false // Disable clone
       }
     });
+    this.createDataNodes();
+
+    this.classes.forEach(SomeClass => {
+      const component = new SomeClass();
+      this.engine.register(component);
+      this.editor.register(component);
+    });
+    this.editor.on(
+      "process nodecreated noderemoved connectioncreated connectionremoved",
+      async () => {
+        await this.engine.abort();
+        await this.engine.process(this.editor.toJSON());
+      }
+    );
   }
 };
