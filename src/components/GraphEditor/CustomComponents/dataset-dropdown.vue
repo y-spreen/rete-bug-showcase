@@ -30,7 +30,7 @@
     <b-input
       v-if="connected && typeSelection && !isInput"
       :value="selectedName"
-      placeholder="Dataset name"
+      placeholder="Select Dataset …"
       class="name"
       @input="nameChange"
     ></b-input>
@@ -38,16 +38,14 @@
 </template>
 
 <script>
-import Types from "src/services/types";
-import Api from "src/services/api";
-
-const debounce = require("debounce");
+const mockTypes = ["mock1", "mock2"];
+const mockNames = ["mock3", "mock4"];
 
 export default {
   props: ["node"],
   data() {
     return {
-      text: "Pls connct",
+      text: "Please connect",
       connected: false,
       typeOptions: [],
       nameOptions: [],
@@ -67,14 +65,8 @@ export default {
   methods: {
     updateList(fileTypes, type, e) {
       this.editor = e;
-      this.typeOptions = fileTypes.filter(t => Types.areCompatible(t, type));
+      this.typeOptions = mockTypes;
       this.connected = true;
-      if (this.typeOptions.length == 1) {
-        this.selectType(this.typeOptions[0]);
-      }
-      if (this.isInput && !this.typeOptions.includes(this.typeSelection)) {
-        this.typeSelection = null;
-      }
       this.rerender();
     },
     clearList() {
@@ -89,17 +81,15 @@ export default {
       this.typeSelection = type;
       this.node.data.type = type;
 
-      Api.get("names_for_type", { type }).then(r => {
-        this.nameOptions = r.data;
-        const name = this.node.data.data_name;
+      this.nameOptions = mockNames;
+      const name = this.node.data.data_name;
 
-        if (!this.isInput || r.data.find(v => v == name)) {
-          this.selectName(name);
-        } else {
-          this.nameSelection = null;
-        }
-        this.rerender();
-      });
+      if (!this.isInput || mockNames.find(v => v == name)) {
+        this.selectName(name);
+      } else {
+        this.nameSelection = null;
+      }
+      this.rerender();
     },
     rerender() {
       let node = this.node;
@@ -107,9 +97,9 @@ export default {
         this.editor && this.editor.view.updateConnections({ node });
       }, 0);
     },
-    nameChange: debounce(function(v) {
+    nameChange(v) {
       this.selectName(v);
-    }, 50)
+    }
   },
   computed: {
     selectedType() {
@@ -120,8 +110,8 @@ export default {
       return this.typeSelection;
     },
     selectedName() {
-      if (!this.connected) return "Please connect";
-      if (!this.nameSelection) return "Select Dataset …";
+      if (!this.connected) return "";
+      if (!this.nameSelection) return "";
       if (this.isInput && !this.nameOptions.length) return "Not available";
 
       return this.nameSelection;

@@ -1,15 +1,6 @@
-<div
-  class="node"
-  :class="[selected(), node.name, textFilteredOut ? 'filtered' : '', isDataset ? 'secondary' : ''] | kebab"
->
+<div class="node" :class="[selected(), node.name] | kebab">
   <div class="title">
-    {{ node.data.displayName }}
-    <font-awesome-icon
-      icon="download"
-      class="download"
-      @click="download"
-      v-if="isDataset"
-    />
+    {{ node.data.displayName }
   </div>
   <!-- Outputs-->
   <div
@@ -17,45 +8,21 @@
     v-for="(output, i) in outputs()"
     :key="node.id + '/o/' + i"
   >
-    <div class="output-title" v-if="!isDataset">{{ output.name }}</div>
-    <dataset-dropdown :node="dataNode" v-if="isDataset"></dataset-dropdown>
+    <dataset-dropdown :node="dataNode"></dataset-dropdown>
     <Socket
       v-socket:output="output"
       type="output"
       :socket="output.socket"
     ></Socket>
   </div>
-  <!-- Controls-->
-  <div
-    class="control"
-    v-for="(control, i) in controls()"
-    v-control="control"
-    :key="node.id + '/c/' + i"
-  ></div>
   <!-- Inputs-->
   <div class="input" v-for="(input, i) in inputs()" :key="node.id + '/i/' + i">
     <Socket v-socket:input="input" type="input" :socket="input.socket"></Socket>
-    <div class="input-title" v-show="!input.showControl()" v-if="!isDataset">
-      {{ input.name }}
-    </div>
-    <dataset-dropdown :node="dataNode" v-if="isDataset"></dataset-dropdown>
+    <dataset-dropdown :node="dataNode"></dataset-dropdown>
     <div
       class="input-control"
       v-show="input.showControl()"
       v-control="input.control"
     ></div>
-  </div>
-  <div
-    class="settings"
-    @click="openSettings"
-    v-if="!isDataset && !running && !scheduled"
-  >
-    <font-awesome-icon icon="cog" />
-  </div>
-  <div class="settings" v-if="running">
-    <font-awesome-icon icon="cog" spin />
-  </div>
-  <div class="settings" v-if="scheduled">
-    <font-awesome-icon icon="hourglass-half" />
   </div>
 </div>
